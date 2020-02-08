@@ -1,0 +1,177 @@
+﻿@viewModel DotVVM.Diagnostics.ServerSideCache.Pages.ReportViewModel, DotVVM.Diagnostics.ServerSideCache
+
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>DotVVM Server-Side Cache Diagnostics Page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style type="text/css">
+        .column-stats {
+            background-color: #f8f8f8;
+        }
+        .column-smallpostback {
+            background-color: #baffb2;
+        }
+        .column-fullpostback {
+            background-color: #fcd2d2;
+        }
+        .important {
+            font-weight: bold;
+        }
+        .legend-box {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            margin-right: .5rem;
+            border: solid 1px gray;
+        }
+
+        h2 {
+            margin-top: 5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1>
+            DotVVM Server-Side Cache Diagnostics Page
+        </h1>
+        <p class="text-right">
+            <dot:Button Text="Refresh" Click="{command: RouteStats.RequestRefresh()}" class="btn btn-primary" />
+        </p>
+
+        <dot:GridView DataSource="{value: RouteStats}" class="table table-bordered">
+            <Columns>
+                <dot:GridViewTextColumn HeaderText="Route" ValueBinding="{value: RouteName}" AllowSorting="true" HeaderCssClass="column-stats" CssClass="column-stats important" />
+                <dot:GridViewTextColumn HeaderText="Cached VM Instances" ValueBinding="{value: TotalViewModelInstances}" AllowSorting="true" HeaderCssClass="column-stats" CssClass="column-stats" />
+                <dot:GridViewTemplateColumn HeaderText="Total Memory Consumption" SortExpression="TotalInMemorySize" AllowSorting="true" HeaderCssClass="column-stats" CssClass="column-stats">
+                    <span data-bind="dotvvm-diag-bytes: TotalInMemorySize" />
+                </dot:GridViewTemplateColumn>
+                <dot:GridViewTextColumn HeaderText="Average VM Reuse" ValueBinding="{value: AverageViewModelReuse}" AllowSorting="true" FormatString="n1" HeaderCssClass="column-stats" CssClass="column-stats" />
+                <dot:GridViewTextColumn HeaderText="Efficiency Score" ValueBinding="{value: DataTransferEfficiencyScore}" AllowSorting="true" FormatString="n1" HeaderCssClass="column-stats" CssClass="column-stats important" />
+
+                <dot:GridViewTemplateColumn HeaderText="Total Diff PostBack Size" SortExpression="TotalClientToServerDiffSize" AllowSorting="true" HeaderCssClass="column-smallpostback" CssClass="column-smallpostback">
+                    <span data-bind="dotvvm-diag-bytes: TotalClientToServerDiffSize" />
+                </dot:GridViewTemplateColumn>
+                <dot:GridViewTemplateColumn HeaderText="Estimated Size Without Cache" SortExpression="TotalEstimatedFullPostBackSize" AllowSorting="true" HeaderCssClass="column-smallpostback" CssClass="column-smallpostback">
+                    <span data-bind="dotvvm-diag-bytes: TotalEstimatedFullPostBackSize" />
+                </dot:GridViewTemplateColumn>
+                <dot:GridViewTemplateColumn HeaderText="Estimated Saved Size" SortExpression="TotalEstimatedSavedSize" AllowSorting="true" HeaderCssClass="column-smallpostback" CssClass="column-smallpostback">
+                    <span data-bind="dotvvm-diag-bytes: TotalEstimatedSavedSize" />
+                </dot:GridViewTemplateColumn>
+                <dot:GridViewTextColumn HeaderText="Diff PostBacks Count" ValueBinding="{value: SmallPostBackCount}" AllowSorting="true" HeaderCssClass="column-smallpostback" CssClass="column-smallpostback" />
+
+                <dot:GridViewTemplateColumn HeaderText="Total Diff Cache Miss PostBack Size" SortExpression="TotalCacheMissDiffBytes" AllowSorting="true" HeaderCssClass="column-fullpostback" CssClass="column-fullpostback">
+                    <span data-bind="dotvvm-diag-bytes: TotalCacheMissDiffBytes" />
+                </dot:GridViewTemplateColumn>
+                <dot:GridViewTemplateColumn HeaderText="Total Full PostBack Size" SortExpression="TotalFullPostBackBytes" AllowSorting="true" HeaderCssClass="column-fullpostback" CssClass="column-fullpostback">
+                    <span data-bind="dotvvm-diag-bytes: TotalFullPostBackBytes" />
+                </dot:GridViewTemplateColumn>
+                <dot:GridViewTextColumn HeaderText="Diff Cache Miss PostBack Count" ValueBinding="{value: CacheMissPostBackCount}" AllowSorting="true" HeaderCssClass="column-fullpostback" CssClass="column-fullpostback" />
+                <dot:GridViewTextColumn HeaderText="Full PostBack Count" ValueBinding="{value: FullPostBackCount}" AllowSorting="true" HeaderCssClass="column-fullpostback" CssClass="column-fullpostback" />
+            </Columns>
+            <EmptyDataTemplate>
+                <p><em>No data has been gathered so far. Make sure that Server-Side ViewModel Cache is enabled:</em></p>
+                <pre><code><span style="color: darkgreen">// DotvvmStartup.cs</span><br />config.ExperimentalFeatures.ServerSideViewModelCache.EnableForAllRoutes();</code></pre>
+            </EmptyDataTemplate>
+        </dot:GridView>
+        <dot:DataPager DataSet="{value: RouteStats}" class="pagination" />
+
+        <h2>Legend</h2>
+        <p>The table above shows the efficiency of the Server-Side ViewModel Caching feature. Each row shows data for a particular route in your application.</p>
+
+        <h3><span class="legend-box column-stats"></span> Memory Consumption</h3>
+        <p>The gray section of the table shows how much server memory is occupied because of caching.</p>
+        <ul>
+            <li>
+                <strong>Cached VM Instances</strong> is a number of unique viewmodel instances.
+                The higher the number is, the higher the memory consumption will be.
+            </li>
+            <li>
+                <strong>Total Memory Consumption</strong> shows how much memory all cached viewmodel instances occupy.
+            </li>
+            <li>
+                <strong>Average VM Reuse</strong> shows whether the viewmodel instances can be reused by multiple users.
+                Viewmodel instances are de-duplicated by its content, so if all users on the page have the same data in the viewmodel,
+                the reuse ratio will be high as one instance can server all of them. The higher the number is, the less memory is occupied.
+            </li>
+            <li>
+                <strong>Efficiency Score</strong> shows how much unnecessary traffic was saved (1 point = 1% of bytes is saved). The higher the number the better.
+            </li>
+        </ul>
+
+        <h3><span class="legend-box column-smallpostback"></span> Diff PostBacks</h3>
+        <p>The green section shows data for <em>good postbacks</em> - these indicate successful utilization of the cache. The client only provided the diff with his changes of the viewmodel, and the rest of the viewmodel was successfully restored from the server-side cache.</p>
+        <ul>
+            <li>
+                <strong>Total Diff PostBack Size</strong> shows how many bytes were transferred from the client in <em>good postbacks</em>. The lower the number is the better.
+            </li>
+            <li>
+                <strong>Estimated Size Without Cache</strong> shows how many bytes would be transferred from the client if the server-side cache was disabled.
+            </li>
+            <li>
+                <strong>Estimated Saved Size</strong> estimates how many bytes were actually saved thanks to the server-side viewmodel cache. The higher the number is the better.
+            </li>
+            <li>
+                <strong>Diff PostBacks Count</strong> shows how many <em>good postbacks</em> occured for the particular route.
+            </li>
+        </ul>
+
+        <h3><span class="legend-box column-fullpostback"></span> Full PostBacks</h3>
+        <p>The red section shows data for <em>bad postbacks</em> - these indicate cache misses. The client provided the diff with his changes of the viewmodel, but the rest of the viewmodel wasn't found in the server-side cache, and the client had to repeat the postback and provide the full viewmodel.</p>
+        <ul>
+            <li>
+                <strong>Total Diff Cache Miss PostBack Size</strong> shows how many (useless) bytes were transferred from the client in the diff postbacks. The lower the number the better.
+            </li>
+            <li>
+                <strong>Total Full PostBack Size</strong> shows how many bytes were transferred from the client as part of the repeated full postbacks. The lower the number is better.
+            </li>
+            <li>
+                <strong>Diff Cache Miss PostBack Count</strong> shows the number of the unsuccessful diff postbacks. The lower the number is the better.
+            </li>
+            <li>
+                <strong>Full PostBack Count</strong> shows the number of the repeated full postbacks. The lower the number is the better.
+            </li>
+        </ul>
+
+        <h3>How to interpret the data</h3>
+        <p>
+            The <em>Server-Side ViewModel Caching</em> allows you to balance between two concerns: <strong>bytes transferred on postbacks</strong> and 
+            <strong>server memory consumption</strong>.
+        </p>
+        <p>
+            Thanks to this tool, you can easily see which routes burden the cache with thousands of different viewmodel instances, and decide whether 
+            the amount of bytes transferred from your users is worth the server resources.
+        </p>
+        <p>
+            <em>Hints:</em>
+        </p>
+        <ul>
+            <li>If your app consumes too much memory, sort the routes by <strong>Total Memory Consumption</strong> and disable the cache for the most demanding routes.</li>
+            <li>If your users complain about slow responses and you see high numbers in <strong>Total Full PostBack Size</strong>, try to enable the cache for such routes.</li>
+        </ul>
+
+    </div>
+
+    <dot:InlineScript Dependencies="knockout">
+    ko.bindingHandlers["dotvvm-diag-bytes"] = {
+        init: function (element, valueAccessor) {
+        },
+        update: function (element, valueAccessor) {
+            var value = ko.unwrap(valueAccessor());
+            if (value < 100) {
+                element.innerText = value + " B";
+            } else if (value < 1024 * 100) {
+                element.innerText = Math.round(value / 1024.0 * 10) / 10 + " kB";
+            } else if (value < 1024 * 1024 * 100) {
+                element.innerText = Math.round(value / 1024.0 / 1024.0 * 10) / 10 + " MB";
+            } else {
+                element.innerText = Math.round(value / 1024.0 / 1024.0 / 1024.0 * 10) / 10 + " GB";
+            }
+        }
+    }
+    </dot:InlineScript>
+</body>
+</html>

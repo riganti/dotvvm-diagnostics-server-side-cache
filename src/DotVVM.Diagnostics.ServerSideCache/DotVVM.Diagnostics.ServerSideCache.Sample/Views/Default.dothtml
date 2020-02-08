@@ -1,0 +1,15 @@
+﻿@viewModel DotVVM.Diagnostics.ServerSideCache.Sample.ViewModels.DefaultViewModel, DotVVM.Diagnostics.ServerSideCache.Sample
+@masterPage Views/MasterPage.dotmaster
+<dot:Content ContentPlaceHolderID="MainContent">
+
+	<h1>{{value: Title}}</h1>
+
+	<p>
+		<dot:TextBox Text="{value: UserData}" />
+	</p>
+
+	<dot:Button Text="Test PostBack" Click="{command: TestPostBack()}" />
+
+	<p><a href="/_diagnostics/cache">View Report</a></p>
+
+</dot:Content>

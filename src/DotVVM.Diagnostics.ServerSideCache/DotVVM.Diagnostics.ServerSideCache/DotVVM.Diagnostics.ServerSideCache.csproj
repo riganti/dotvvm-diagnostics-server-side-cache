@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Pages\Report.dothtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Pages\Report.dothtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotVVM" Version="2.4.0.1" />
+  </ItemGroup>
+
+</Project>
