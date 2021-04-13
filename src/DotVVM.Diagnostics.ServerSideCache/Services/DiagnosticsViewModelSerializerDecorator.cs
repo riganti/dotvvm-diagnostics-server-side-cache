@@ -31,7 +31,7 @@ namespace DotVVM.Diagnostics.ServerSideCache.Services
             defaultViewModelSerializer.PopulateViewModel(context, serializedPostData);
         }
 
-        public void BuildViewModel(IDotvvmRequestContext context) => defaultViewModelSerializer.BuildViewModel(context);
+        public void BuildViewModel(IDotvvmRequestContext context, object commandResult) => defaultViewModelSerializer.BuildViewModel(context, commandResult);
 
         public string BuildStaticCommandResponse(IDotvvmRequestContext context, object result) => defaultViewModelSerializer.BuildStaticCommandResponse(context, result);
 
