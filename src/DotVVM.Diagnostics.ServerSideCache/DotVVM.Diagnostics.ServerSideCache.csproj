@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <AssemblyTitle>DotVVM.Diagnostics.ServerSideCache</AssemblyTitle>
-    <VersionPrefix>2.5.0</VersionPrefix>
+    <VersionPrefix>3.0.0</VersionPrefix>
     <TargetFrameworks>netstandard2.0;net451</TargetFrameworks>
     <PackageId>DotVVM.Diagnostics.ServerSideCache</PackageId>
-    <PackageVersion>2.5.0</PackageVersion>
+    <PackageVersion>3.0.0</PackageVersion>
     <Authors>RIGANTI</Authors>
     <Description>Diagnostics add-in for DotVVM projects to visualize usage of Server-Side ViewModel Cache</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
