@@ -13,7 +13,7 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DotVVM.AspNetCore" Version="3.0.0" />
+    <PackageReference Include="DotVVM.AspNetCore" Version="3.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DotVVM.Diagnostics.ServerSideCache\DotVVM.Diagnostics.ServerSideCache.csproj" />
